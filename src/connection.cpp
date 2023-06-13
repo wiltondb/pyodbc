@@ -230,7 +230,7 @@ checkSuccess:
 }
 
 PyObject* Connection_New(PyObject* pConnectString, bool fAutoCommit, bool fAnsi, long timeout, bool fReadOnly,
-                         PyObject* attrs_before, Object& encoding)
+                         PyObject* attrs_before, Object& encoding, bool fUseDescribeparamForNone)
 {
     // pConnectString
     //   A string or unicode object.  (This must be checked by the caller.)
@@ -424,6 +424,7 @@ PyObject* Connection_New(PyObject* pConnectString, bool fAutoCommit, bool fAnsi,
     cnxn->odbc_major             = p->odbc_major;
     cnxn->odbc_minor             = p->odbc_minor;
     cnxn->supports_describeparam = p->supports_describeparam;
+    cnxn->use_describeparam_for_none = fUseDescribeparamForNone;
     cnxn->datetime_precision     = p->datetime_precision;
     cnxn->need_long_data_len     = p->need_long_data_len;
     cnxn->varchar_maxlength      = p->varchar_maxlength;

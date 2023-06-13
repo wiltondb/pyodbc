@@ -39,6 +39,10 @@ struct Connection
     // to insert NULLs into binary columns.
     bool supports_describeparam;
 
+    // Whether to use SQLDescribeParam call for None parameters 
+    // https://github.com/babelfish-for-postgresql/babelfish_extensions/issues/1354
+    bool use_describeparam_for_none;
+
     // The column size of datetime columns, obtained from SQLGetInfo(), used to determine the datetime precision.
     int datetime_precision;
 
@@ -110,7 +114,7 @@ struct Connection
  * exception is set and zero is returned.
  */
 PyObject* Connection_New(PyObject* pConnectString, bool fAutoCommit, bool fAnsi, long timeout, bool fReadOnly,
-                         PyObject* attrs_before, Object& encoding);
+                         PyObject* attrs_before, Object& encoding, bool fUseDescribeparamForNone);
 
 /*
  * Used by the Cursor to implement commit and rollback.

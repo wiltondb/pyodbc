@@ -2112,20 +2112,27 @@ static bool GetParamType(Cursor* cur, Py_ssize_t index, SQLSMALLINT& type)
 
     if (cur->paramtypes[index] == SQL_UNKNOWN_TYPE)
     {
-        SQLULEN ParameterSizePtr;
-        SQLSMALLINT DecimalDigitsPtr;
-        SQLSMALLINT NullablePtr;
-        SQLRETURN ret;
-
-        Py_BEGIN_ALLOW_THREADS
-        ret = SQLDescribeParam(cur->hstmt, (SQLUSMALLINT)(index + 1), &cur->paramtypes[index], &ParameterSizePtr, &DecimalDigitsPtr, &NullablePtr);
-        Py_END_ALLOW_THREADS
-
-        if (!SQL_SUCCEEDED(ret))
+        if (GetConnection(cur)->use_describeparam_for_none)
         {
-            // This can happen with ("select ?", None).  We'll default to VARCHAR which works with most types.
-            cur->paramtypes[index] = SQL_VARCHAR;
+            SQLULEN ParameterSizePtr;
+            SQLSMALLINT DecimalDigitsPtr;
+            SQLSMALLINT NullablePtr;
+            SQLRETURN ret;
+
+            Py_BEGIN_ALLOW_THREADS
+            ret = SQLDescribeParam(cur->hstmt, (SQLUSMALLINT)(index + 1), &cur->paramtypes[index], &ParameterSizePtr, &DecimalDigitsPtr, &NullablePtr);
+            Py_END_ALLOW_THREADS
+
+            if (!SQL_SUCCEEDED(ret))
+            {
+                // This can happen with ("select ?", None).  We'll default to VARCHAR which works with most types.
+                cur->paramtypes[index] = SQL_VARCHAR;
+            }
         }
+        else
+        {
+            cur->paramtypes[index] = SQL_VARCHAR;
+        } 
     }
 
     type = cur->paramtypes[index];

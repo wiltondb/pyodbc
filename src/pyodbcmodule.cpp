@@ -390,6 +390,7 @@ static PyObject* mod_connect(PyObject* self, PyObject* args, PyObject* kwargs)
     int fReadOnly = 0;
     long timeout = 0;
     Object encoding;
+    int fUseDescribeparamForNone = 0;
 
     Object attrs_before; // Optional connect attrs set before connecting
 
@@ -475,6 +476,11 @@ static PyObject* mod_connect(PyObject* self, PyObject* args, PyObject* kwargs)
                 encoding = value;
                 continue;
             }
+            if (Text_EqualsI(key, "use_describeparam_for_none"))
+            {
+                fUseDescribeparamForNone = PyObject_IsTrue(value);
+                continue;
+            }
 
             // Map DB API recommended names to ODBC names (e.g. user --> uid).
 
@@ -521,7 +527,7 @@ static PyObject* mod_connect(PyObject* self, PyObject* args, PyObject* kwargs)
     }
 
     return (PyObject*)Connection_New(pConnectString.Get(), fAutoCommit != 0, fAnsi != 0, timeout,
-                                     fReadOnly != 0, attrs_before.Detach(), encoding);
+                                     fReadOnly != 0, attrs_before.Detach(), encoding, fUseDescribeparamForNone != 0);
 }
 
 

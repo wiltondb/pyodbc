@@ -4,6 +4,17 @@
 [![Github Actions - Ubuntu Build](https://github.com/mkleehammer/pyodbc/actions/workflows/ubuntu_build.yml/badge.svg?branch=master)](https://github.com/mkleehammer/pyodbc/actions/workflows/ubuntu_build.yml)
 [![PyPI](https://img.shields.io/pypi/v/pyodbc?color=brightgreen)](https://pypi.org/project/pyodbc/)
 
+# Babelfish patch
+
+`babelfish` branch in this fork includes a patch with a workaround to
+[sp_describe_undeclared_parameters problem](https://github.com/babelfish-for-postgresql/babelfish_extensions/issues/1354)
+that happens when PyODBC is used with [Babelfish for PostgreSQL](https://babelfishpg.org/).
+
+With this change `SQLDescribeParam` is NOT used by default for `None` arguments. To restore original behaviour new 
+`use_describeparam_for_none=True` argument needs to be specified to `pyodbc.connect()` call.
+
+# Original readme
+
 pyodbc is an open source Python module that makes accessing ODBC databases simple.  It
 implements the [DB API 2.0](https://www.python.org/dev/peps/pep-0249) specification but is
 packed with even more Pythonic convenience.
